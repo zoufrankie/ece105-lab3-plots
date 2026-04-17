@@ -97,34 +97,52 @@ def plot_histogram(sensor_a, sensor_b, ax):
     ax.set_xlabel('Temperature (°C)')
     ax.set_ylabel('Frequency')
     ax.legend()
-# Create main() that generates data, creates a 1x3 subplot figure,
-# calls each plot function, adjusts layout, and saves as sensor_analysis.png
-# at 150 DPI with tight bounding box.
-def main():
-    """Generate sensor plots and save them to disk.
+# Create box plot(sensor_a, sensor_b, ax) that draws
+# overlapping box plots of both sensors on the given Axes object.
+# Use NumPy-style docstring. Modify ax in place, return None.
+def plot_boxplot(sensor_a, sensor_b, ax):
+    """Create side-by-side box plots of sensor temperature readings.
 
     Parameters
     ----------
-    None
+    sensor_a : ndarray
+        Temperature readings from Sensor A, shape (n,).
+    sensor_b : ndarray
+        Temperature readings from Sensor B, shape (n,).
+    ax : matplotlib.axes.Axes
+        Axes object to plot on. Modified in place.
 
     Returns
     -------
     None
     """
+    box = ax.boxplot(
+        [sensor_a, sensor_b],
+        labels=['Sensor A', 'Sensor B'],
+        patch_artist=True,
+        widths=0.6
+    )
+    colors = ['C0', 'C1']
+    for patch, color in zip(box['boxes'], colors):
+        patch.set_facecolor(color)
+        patch.set_alpha(0.6)
+    ax.set_title('Temperature Distribution by Sensor (Box Plot)')
+    ax.set_ylabel('Temperature (°C)')
+
+# Create main() that generates data, creates a 1x3 subplot figure,
+# calls each plot function, adjusts layout, and saves as sensor_analysis.png
+# at 150 DPI with tight bounding box.
+def main():
     sensor_a, sensor_b, timestamps = generate_data(seed=42)
 
-    fig, axes = plt.subplots(1, 3, figsize=(18, 5))
+    fig, axes = plt.subplots(2, 2, figsize=(10, 8))
+    axes = axes.flatten()
 
     plot_scatter(sensor_a, sensor_b, timestamps, axes[0])
     plot_histogram(sensor_a, sensor_b, axes[1])
+    plot_boxplot(sensor_a, sensor_b, axes[2])
 
-    boxplot_fn = globals().get('plot_boxplot')
-    if callable(boxplot_fn):
-        boxplot_fn(sensor_a, sensor_b, axes[2])
-    else:
-        axes[2].set_title('Box Plot')
-        axes[2].text(0.5, 0.5, 'plot_boxplot not implemented', ha='center', va='center')
-        axes[2].set_axis_off()
+    axes[3].axis('off')
 
     fig.tight_layout()
     fig.savefig('sensor_analysis.png', dpi=150, bbox_inches='tight')
