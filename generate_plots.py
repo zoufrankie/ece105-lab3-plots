@@ -10,6 +10,7 @@ Usage
 """
 
 import numpy as np
+import matplotlib.pyplot as plt
 
 # Create a function generate_data(seed) that returns sensor_a, sensor_b,
 # and timestamps arrays with the same parameters as in the notebook.
@@ -96,3 +97,39 @@ def plot_histogram(sensor_a, sensor_b, ax):
     ax.set_xlabel('Temperature (°C)')
     ax.set_ylabel('Frequency')
     ax.legend()
+# Create main() that generates data, creates a 1x3 subplot figure,
+# calls each plot function, adjusts layout, and saves as sensor_analysis.png
+# at 150 DPI with tight bounding box.
+def main():
+    """Generate sensor plots and save them to disk.
+
+    Parameters
+    ----------
+    None
+
+    Returns
+    -------
+    None
+    """
+    sensor_a, sensor_b, timestamps = generate_data(seed=42)
+
+    fig, axes = plt.subplots(1, 3, figsize=(18, 5))
+
+    plot_scatter(sensor_a, sensor_b, timestamps, axes[0])
+    plot_histogram(sensor_a, sensor_b, axes[1])
+
+    boxplot_fn = globals().get('plot_boxplot')
+    if callable(boxplot_fn):
+        boxplot_fn(sensor_a, sensor_b, axes[2])
+    else:
+        axes[2].set_title('Box Plot')
+        axes[2].text(0.5, 0.5, 'plot_boxplot not implemented', ha='center', va='center')
+        axes[2].set_axis_off()
+
+    fig.tight_layout()
+    fig.savefig('sensor_analysis.png', dpi=150, bbox_inches='tight')
+    plt.close(fig)
+
+
+if __name__ == '__main__':
+    main()
