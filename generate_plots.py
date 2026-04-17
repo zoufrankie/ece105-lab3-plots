@@ -8,6 +8,9 @@ Usage
 -----
     python generate_plots.py
 """
+
+import numpy as np
+
 # Create a function generate_data(seed) that returns sensor_a, sensor_b,
 # and timestamps arrays with the same parameters as in the notebook.
 # Use NumPy-style docstring with Parameters and Returns sections.
@@ -66,4 +69,30 @@ def plot_scatter(sensor_a, sensor_b, timestamps, ax):
     ax.set_title('Temperature Sensor Readings Over Time')
     ax.set_xlabel('Time (s)')
     ax.set_ylabel('Temperature (°C)')
+    ax.legend()
+# Create plot_histogram(sensor_a, sensor_b, ax) that draws
+# overlapping histograms of both sensors on the given Axes object.
+# Use NumPy-style docstring. Modify ax in place, return None.
+def plot_histogram(sensor_a, sensor_b, ax):
+    """Create overlapping histograms of sensor temperature readings.
+
+    Parameters
+    ----------
+    sensor_a : ndarray
+        Temperature readings from Sensor A, shape (n,).
+    sensor_b : ndarray
+        Temperature readings from Sensor B, shape (n,).
+    ax : matplotlib.axes.Axes
+        Axes object to plot on. Modified in place.
+
+    Returns
+    -------
+    None
+    """
+    bins = 20
+    ax.hist(sensor_a, bins=bins, alpha=0.6, label='Sensor A', color='C0', edgecolor='black')
+    ax.hist(sensor_b, bins=bins, alpha=0.6, label='Sensor B', color='C1', edgecolor='black')
+    ax.set_title('Temperature Distribution by Sensor')
+    ax.set_xlabel('Temperature (°C)')
+    ax.set_ylabel('Frequency')
     ax.legend()
